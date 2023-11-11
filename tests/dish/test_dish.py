@@ -47,5 +47,3 @@ def test_dish():
 
     # Testa se o método get_ingredients funciona corretamente
     assert dish.get_ingredients() == {Ingredient("farinha")}
-
-    return dish
