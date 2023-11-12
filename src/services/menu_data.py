@@ -8,24 +8,19 @@ from src.models.ingredient import Ingredient
 class MenuData:
     def __init__(self, source_path: str) -> None:
         self.dishes: Set[Dish] = set()
-        self._load_menu_data(source_path)
-
-    def _load_menu_data(self, source_path: str) -> None:
         with open(source_path, newline="", encoding="utf-8") as csvfile:
-            reader = csv.reader(csvfile)
-            next(reader)  # Ignora o cabeçalho
+            reader = csv.DictReader(csvfile)
 
-            current_dish = None
             for row in reader:
-                dish_name, dish_price, ing_name, ing_quantity = row
 
                 # Cria o prato se for um prato novo
-                if current_dish is None or current_dish.name != dish_name:
-                    current_dish = Dish(dish_name, float(dish_price))
-                    self.dishes.add(current_dish)
+                if row["dish"] not in self.dishes:
+                    self.dishes.add(Dish(row["dish"], float(row["price"])))
 
                 # Adiciona o ingrediente à receita do prato
-                ingredient = Ingredient(ing_name)
-                current_dish.add_ingredient_dependency(
-                    ingredient, int(ing_quantity)
-                    )
+                for dish in self.dishes:
+                    if dish.name == row["dish"]:
+                        dish.add_ingredient_dependency(
+                            Ingredient(row["ingredient"]),
+                            int(row["recipe_amount"])
+                        )
